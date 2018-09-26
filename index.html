@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>Map</title>
-        <script type="text/javascript" src="d3/d3.js"></script>
+        <!-- <script type="text/javascript" src="d3/d3.js"></script> -->
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
@@ -60,7 +60,7 @@
                 </div>
                 <!-- <div class="col-1" style="background-color: rgb(157,210,184);"></div> -->
                 <div class="col-6">
-                    <svg id="timegraph" width="600" height="400" style="margin: 40;">
+                    <svg id="timegraph" width="1000" height="350" style="margin: 40;">
                     </svg>
                 </div>
             </div>
@@ -94,10 +94,27 @@
                     .on("click", reset);
 
             mapgraph.call(zoom);
+            // d3.queue()
+            d3.csv("/data/roadsName.csv",function(d){
+                for(var i=0;i<d.length-1;i++){
+                    d3.select("#main").select("g")
+                                    .append("text")
+                                    .attr("x",d[i].x*scaleInstant)
+                                    .attr("y",d[i].y*scaleInstant)
+                                    .text(function(){
+                                        if(d[i].name==d[i+1].name){
+                                            return "";
+                                        }else{
+                                            return d[i].name;
+                                        }
+                                    })
+                                    .attr("transform",rotate(90));
+                                }
+                
+            })
             d3.json("/data/streets.json",function(d){
                 //console.log(d.length);
                 for (var i=0; i< d.length; i++){
-                    //console.log(d[i]);
                     d3.select("#main").select("g")
                                         .append("path")
                                         .attr("d", lineFunction(d[i]))
@@ -279,8 +296,8 @@
         
             // draw timeline graph
             var margin = {top:20, right:20, bottom:50, left:70},
-            	width = 800-margin.left - margin.right,
-            	height = 500 - margin.top - margin.bottom;
+            	width = 500-margin.left - margin.right,
+            	height = 300 - margin.top - margin.bottom;
             //parse the date
             var parseTime = d3.timeParse("%d-%b");
              //set ranges 
