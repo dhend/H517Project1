@@ -94,24 +94,27 @@
                     .on("click", reset);
 
             mapgraph.call(zoom);
-            // d3.queue()
-            d3.csv("/data/roadsName.csv",function(d){
-                for(var i=0;i<d.length-1;i++){
-                    d3.select("#main").select("g")
-                                    .append("text")
-                                    .attr("x",d[i].x*scaleInstant)
-                                    .attr("y",d[i].y*scaleInstant)
-                                    .text(function(){
-                                        if(d[i].name==d[i+1].name){
-                                            return "";
-                                        }else{
-                                            return d[i].name;
-                                        }
-                                    })
-                                    .attr("transform",rotate(90));
-                                }
+            
+            // d3.csv("/data/roadsName.csv",function(d){
+            //     for(var i=0;i<d.length-1;i++){
+            //         d3.select("#main").select("g")
+            //                         .append("text")
+            //                         .attr("x",d[i].x*scaleInstant)
+            //                         .attr("y",d[i].y*scaleInstant)
+            //                         .text(function(){
+            //                             if(d[i].name==d[i+1].name){
+            //                                 return "";
+            //                             }else{
+            //                                 return d[i].name;
+            //                             }
+            //                         });
+            //                     }
                 
-            })
+            // })
+            //label the main streets
+
+
+            
             d3.json("/data/streets.json",function(d){
                 //console.log(d.length);
                 for (var i=0; i< d.length; i++){
@@ -119,10 +122,32 @@
                                         .append("path")
                                         .attr("d", lineFunction(d[i]))
                                         .attr("stroke", "black")
-                                        .attr("stroke-width", 3)
+                                        .attr("stroke-width", 2)
                                         .attr("fill", "none");
                 }           
             });
+            //data for labels
+            streetlabels = [{x:11.165,y:16.6,street:'Oxford Street',degree:10},{x:5,y:17,street:'Regent Street',degree:-75},{x:18,y:13,street:'Dean Street',degree:-70},{x:8,y:10,street:'Regent Street',degree:-60}];
+
+            
+            d3.select("#main").select("g")
+                                .selectAll("text")
+                                .data(streetlabels)
+                                .enter()
+                                .append("text")
+                                .attr("x",function(d){
+                                    return d.x*scaleInstant;
+                                })
+                                .attr("y",function(d){
+                                    return d.y*scaleInstant;
+                                })
+                                .attr("text-anchor", "middle")
+                                .attr("transform",function(d){
+                                    return "rotate("+d.degree+","+d.x*scaleInstant+","+d.y*scaleInstant+")"
+                                })
+                                .text(function(d){
+                                    return d.street
+                                });
             function reset() {
               active.classed("active", false);
               active = d3.select(null);
