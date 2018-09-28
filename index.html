@@ -2,14 +2,17 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Map</title>
+        <title>Mapping the 1854 London Cholera Outbreak</title>
+        
         <!-- <script type="text/javascript" src="d3/d3.js"></script> -->
+        <script src='//alexmacy.github.io/crossfilter/crossfilter.v1.min.js' defer></script>
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
         <style type="text/css">
            .line {
 			  fill: none;
@@ -31,41 +34,52 @@
 				stroke-dasharray: 3,3;
 			}
             .background {
-              fill: none;
-              pointer-events: all;
+                fill: none;
+                pointer-events: all;
+            }
+            .bar { 
+                fill: steelblue; 
+            }
+            h1 {
+                text-align: center;
+                margin: .5em .5em;
             }
         </style>
         
     </head>
     <body>
         <div class="container-fluid">
-            <div class="row">
-                <p>Project 1</p>
-            </div>
+            <!-- <div class="row" id="title"> -->
+                    <h1>Mapping the 1854 London Cholera Outbreak</h1>
+            <!-- </div> -->
             <div class="row" style="background-color: white;">
                 <!-- <p>I have a map</p> -->
-                <div class="col-1">
-                    <button type="button" class="btn btn-info btn-block" id = "changeView" onclick="genderAndAge()">Age</button>
-                    
-                </div>
-                <div class="col-5">
-                    <svg id="main" width="700" height="650" style="background-color:rgb(242,247,241);">
+                
+                <div class="col-7">
+                    <svg id="main" width="650" height="600" style="background-color:rgb(242,247,241);">
                         <g>   
-                        </g>
-                    </svg>
-                    <svg id="extra" width="220" height="400">
-                        <g> 
                         </g>
                     </svg>
                 </div>
                 <!-- <div class="col-1" style="background-color: rgb(157,210,184);"></div> -->
-                <div class="col-6">
-                    <svg id="timegraph" width="1000" height="350" style="margin: 40;">
+                <div class="col-5">
+                    <svg id="timegraph" width="1000" height="350">
                     </svg>
+                    <svg id="extra" width="220" height="250">
+                        <g> 
+                        </g>
+                    </svg>
+                    <button type="button" class="btn btn-light btn-block" id = "changeView" onclick="genderAndAge()">Age View</button>
+                    <!-- <svg id="windowview" width="1000" height="350" style="visibility: hidden;">
+                    </svg>
+                    <svg id="agesexview" width="1000" height="350" style="visibility: hidden;">
+                    </svg> -->
                 </div>
             </div>
         </div>
         <script type="text/javascript">
+            
+
         	var scaleInstant =30;
             var lineFunction = d3.line()
                                  .x(function(d) { return d.x*scaleInstant; })
@@ -79,7 +93,6 @@
                     document.getElementById("changeView").innerHTML="Age View";
                     goa=1;
                 }
-                console.log(goa);
             }
              
             var zoom = d3.zoom()
@@ -95,23 +108,7 @@
 
             mapgraph.call(zoom);
             
-            // d3.csv("/data/roadsName.csv",function(d){
-            //     for(var i=0;i<d.length-1;i++){
-            //         d3.select("#main").select("g")
-            //                         .append("text")
-            //                         .attr("x",d[i].x*scaleInstant)
-            //                         .attr("y",d[i].y*scaleInstant)
-            //                         .text(function(){
-            //                             if(d[i].name==d[i+1].name){
-            //                                 return "";
-            //                             }else{
-            //                                 return d[i].name;
-            //                             }
-            //                         });
-            //                     }
-                
-            // })
-            //label the main streets
+
 
 
             
@@ -122,14 +119,50 @@
                                         .append("path")
                                         .attr("d", lineFunction(d[i]))
                                         .attr("stroke", "black")
-                                        .attr("stroke-width", 2)
+                                        .attr("stroke-width", 2.5)
                                         .attr("fill", "none");
                 }           
             });
             //data for labels
-            streetlabels = [{x:11.165,y:16.6,street:'Oxford Street',degree:10},{x:5,y:17,street:'Regent Street',degree:-75},{x:18,y:13,street:'Dean Street',degree:-70},{x:8,y:10,street:'Regent Street',degree:-60}];
+            streetlabels = [{x:11.165,y:16.6,street:'Oxford Street',degree:10},{x:5,y:17,street:'Regent Street',degree:-75},{x:18,y:13,street:'Dean Street',degree:-70},{x:8,y:10,street:'Regent Street',degree:-60},{x:12.5,y:12.3,street:'Broad Street',degree:25}];
 
             
+            //lable the building 
+            d3.select("#main").select("g")
+                                .append("rect")
+                                .attr("x",11.2*scaleInstant)
+                                .attr("y",12.5*scaleInstant)
+                                .attr("width",1.2*scaleInstant)
+                                .attr("height",1*scaleInstant)
+                                .style("fill","gray")
+                                .style("stroke","black")
+                                .attr("transform","rotate(30,"+11.2*scaleInstant+","+12.5*scaleInstant+")");
+            d3.select("#main").select("g")
+                                .append("text")
+                                .attr("x",11*scaleInstant)
+                                .attr("y",13*scaleInstant)
+                                .attr("transform","rotate(30,"+11*scaleInstant+","+13*scaleInstant+")")
+                                .style("font-size","5px")
+                                .style("fill","white")
+                                .text(" Work House");
+
+            d3.select("#main").select("g")
+                                .append("rect")
+                                .attr("x",14*scaleInstant)
+                                .attr("y",11.2*scaleInstant)
+                                .attr("width",0.5*scaleInstant)
+                                .attr("height",1.2*scaleInstant)
+                                .style("fill","gray")
+                                .attr("transform","rotate(29,"+14*scaleInstant+","+11.2*scaleInstant+")");
+            d3.select("#main").select("g")
+                                .append("text")
+                                .attr("x",13.9*scaleInstant)
+                                .attr("y",12.2*scaleInstant)
+                                .attr("transform","rotate(-61,"+13.9*scaleInstant+","+12.2*scaleInstant+")")
+                                .style("font-size","5px")
+                                .style("fill","white")
+                                .text(" Brewery");
+            //label the street
             d3.select("#main").select("g")
                                 .selectAll("text")
                                 .data(streetlabels)
@@ -176,12 +209,29 @@
                     .attr("y",20)
                     .text("Location");
 
-                for(var i=0; i<3; i++){
+                for(var i=0; i<2; i++){
                     noti.append("rect")
                         .attr("x",5)
                         .attr("y",40+i*20)
                         .attr("width",10)
-                        .attr("height",10);
+                        .attr("height",10)
+                        .style("fill",function(){
+                            if(i==0){
+                                return "black";
+                            }else if(i==1){
+                                return "gray";
+                            }
+                        });
+                    noti.append("text")
+                        .attr("x",20)
+                        .attr("y",50+i*20)
+                        .text(function(){
+                            if(i==0){
+                                return "pumps";
+                            }else if(i==1){
+                                return "buildings";
+                            }
+                        });
                 }
                 //adding for location labels
 
@@ -271,9 +321,9 @@
                         .style("stroke","black")
                         .attr("fill",function(){
                             if(i==0){
-                                return d3.rgb(133,203,207);
+                                return d3.rgb(76,120,168);
                             }else{
-                                return d3.rgb(57,132,182);
+                                return d3.rgb(245,133,24);
                             }
                         });
                 }
@@ -325,10 +375,11 @@
             	height = 300 - margin.top - margin.bottom;
             //parse the date
             var parseTime = d3.timeParse("%d-%b");
-             //set ranges 
+            //set ranges 
             var x = d3.scaleTime().range([0,width]);
             var y = d3.scaleLinear().range([height,0]);
             //define the line
+
             var valueline = d3.line()
             					.x(function(d){
             						return x(d.date);
@@ -348,7 +399,20 @@
 					          "translate(" + margin.left + "," + margin.top + ")");
 			var g = svg.append("g");
 				// .attr("transform","translate("+margin.left+","+margin.top+")");
-			//get the data
+			//window chart
+            var barchart = d3.select("#windowview")
+                            .attr("width",width + margin.left + margin.right)
+                            .attr("height",height + margin.top + margin.bottom)
+                            .append("g")
+                            .attr("transform","translate("+margin.left+","+margin.top+")");
+            var g1 = barchart.append("g");
+
+            var agesex = d3.select("#agesexview")
+                            .attr("width",width + margin.left + margin.right)
+                            .attr("height",height + margin.top + margin.bottom)
+                            .append("g")
+                            .attr("transform","translate("+margin.left+","+margin.top+")");
+            //get the data
             d3.queue()
                 .defer(d3.csv,"/data/deathdays.csv")
                 .defer(d3.csv,"/data/deaths_age_sex.csv")
@@ -367,6 +431,22 @@
                         y.domain([0, d3.max(data1, function(d){
                             return d.deaths;
                         })]);
+
+                        //distribution of age and sex
+                        agesex.selectAll("bar")
+                                .data(data2)
+                                .enter()
+                                .append("rect")
+                                .attr("x",function(d){
+
+                                })
+                                .attr("y",function(d){
+                                    return y(d.age)
+                                })
+                                
+
+
+
                         svg.append("path")
                             .data([data1])
                             .attr("class","line")
@@ -376,14 +456,22 @@
                             .attr("transform","translate("+(width/2)+" ,"+(height+margin.top+20)+")")
                             .style("text-anchor","middle")
                             .text("Date");
+                        barchart.append("text")
+                                .attr("transform","translate("+(width/2)+" ,"+(height+margin.top+20)+")")
+                                .style("text-anchor","middle")
+                                .text("Date");
                         //add the X axis
                         svg.append("g")
                             .attr("transform","translate(0,"+height+")")
                             .call(d3.axisBottom(x));
-
+                        barchart.append("g")
+                                .attr("transform","translate(0,"+height+")")
+                                .call(d3.axisBottom(x));
                         //add the Y axis
                         svg.append("g")
                             .call(d3.axisLeft(y));
+                        barchart.append("g")
+                                .call(d3.axisLeft(y));
                         //text label for Y
                         svg.append("text")
                             .attr("transform","rotate(-90)")
@@ -394,12 +482,25 @@
                             .attr("dy","1em")
                             .style("text-anchor","middle")
                             .text("the Amount of the Deaths");
+                        barchart.append("text")
+                                .attr("transform","rotate(-90)")
+                                .attr("y", 0 - margin.left)
+                                .attr("y2",height)
+                                .attr("x", 0 - (height/2))
+                                .attr("x2",width)
+                                .attr("dy","1em")
+                                .style("text-anchor","middle")
+                                .text("the Amount of the Deaths");
 
                         var map = d3.select("#main").select("g");
                         var focus = g.append("g")
                             .attr("class", "focus")
                             .style("display","none");
-
+                        var windrect = g1.append("g")
+                                        .attr("class","focus")
+                                        .style("display","none");
+                        
+                                       
                         focus.append("line")
                             .attr("class", "x-hover-line hover-line")
                             .attr("y", 0)
@@ -423,8 +524,31 @@
                                             return d.date;
                                         }).left;
 
-                        
+                        barchart.selectAll("bar")
+                                .data(data1)
+                                .enter()
+                                .append("rect")
+                                .style("fill","steelblue")
+                                .attr("x",function(d){
+                                    // console.log(x(d.date));
+                                    return x(d.date);
 
+                                })
+                                .attr("width",8)
+                                .attr("y",function(d){
+                                    // console.log(y(d.deaths));
+                                    return y(d.deaths);
+                                })
+                                .attr("height",function(d){
+                                    return height-y(d.deaths);
+                                });
+                        barchart.append("rect")
+                                .attr("class","lay")
+                                .attr("width",200)
+                                .attr("length",300)
+                                .attr("x",200)
+                                .attr("y",200)
+                                .style("fill","steelblue");
                         function mousemove(){
                             var x0 = x.invert(d3.mouse(this)[0]),
                                 i = bisectDate(data1, x0, 1),
@@ -432,20 +556,8 @@
                                 d1 = data1[i],
                                 d = (x0 - d0.date)>(d1.date - x0)?d1:d0;
                             var xx = d.date;
-                            
-                            // map.select(".deadPeaple")
-                            //     .style("opacity", 1);
-                            // map.selectAll(".deadPeaple")
-                            //     .style("opacity",0);
-                            // var deaths = d3.csv("data/deaths_age_sex.csv",function(d){
-                            //         for(var i=0;i<d.length;i++){
-                            //             if(parseTime(d[i].deathdate)<=xx){
-                                            
-                            //             }
-                            //         }
-                            // });
+
                             var alreadyDead =[];
-                            // console.log(data2[1].deathdate);
                             for(var i=0;i<data2.length;i++){
                                 if(parseTime(data2[i].deathdate)<=xx){
                                     alreadyDead.push(data2[i]);
@@ -471,10 +583,10 @@
                                 .style("fill",function(d){
                                     if(goa==0){
                                         if(d.gender==0){
-                                            return d3.rgb(133,203,207);
+                                            return d3.rgb(76,120,168);
                                         }
                                         else if(d.gender==1){
-                                            return d3.rgb(57,132,182);
+                                            return d3.rgb(245,133,24);
                                         }
                                     }else if(goa==1){
                                         if(d.age==0){
