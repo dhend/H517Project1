@@ -12,7 +12,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+        <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script> -->
         <style type="text/css">
            .line {
 			  fill: none;
@@ -43,6 +43,26 @@
             h1 {
                 text-align: center;
                 margin: .5em .5em;
+            }
+            .axis text {
+              font: 10px sans-serif;
+            }
+
+            .axis path,
+            .axis line {
+              fill: none;
+              stroke: #000;
+              shape-rendering: crispEdges;
+            }
+
+            .x.axis path {
+              display: none;
+            }
+            .male {
+                fill:rgb(76,120,168);
+            }
+            .female{
+                fill:rgb(245,133,24);
             }
         </style>
         
@@ -76,6 +96,16 @@
                     </svg> -->
                 </div>
             </div>
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col-6">
+                    <center>
+                        <svg id="distview" width="500" height="350">
+                        </svg>
+                    </center>
+                </div>
+                <div class="col-3"></div>
+            </div>
         </div>
         <script type="text/javascript">
             
@@ -88,9 +118,11 @@
             function genderAndAge(){
                 if(goa == 1){
                     document.getElementById("changeView").innerHTML="Gender View";
+                    d3.select("#main").select("g").selectAll("circle").remove();
                     goa=0;
                 }else{
                     document.getElementById("changeView").innerHTML="Age View";
+                    d3.select("#main").select("g").selectAll("circle").remove();
                     goa=1;
                 }
             }
@@ -378,6 +410,7 @@
             //set ranges 
             var x = d3.scaleTime().range([0,width]);
             var y = d3.scaleLinear().range([height,0]);
+            var x1= d3.scaleBand().range([0,width]).padding(0.1);
             //define the line
 
             var valueline = d3.line()
@@ -428,6 +461,9 @@
                         x.domain(d3.extent(data1,function(d){
                             return d.date;
                         }));
+                        // x1.domain(d3.extent(data2,function(d){
+                        //     return d.age;
+                        // }));
                         y.domain([0, d3.max(data1, function(d){
                             return d.deaths;
                         })]);
@@ -443,8 +479,156 @@
                                 .attr("y",function(d){
                                     return y(d.age)
                                 })
-                                
+                        
+                        //caculate the distribution
+                        var dist = [{male:0,female:0,label:"0-10"},{male:0,female:0,label:"11-20"},{male:0,female:0,label:"21-40"},{male:0,female:0,label:"41-60"},{male:0,female:0,label:"61-80"},{male:0,female:0,label:">80"}];
+                        for(var i=0;i<data2.length;i++){
+                            if(data2[i].age==0){
+                                if(data2[i].gender==0){
+                                    dist[0].male++;
+                                }else{
+                                    dist[0].female++;
+                                }
+                            }else if(data2[i].age==1){
+                                if(data2[i].gender==0){
+                                    dist[1].male++;
+                                }else{
+                                    dist[1].female++;
+                                }
+                            }if(data2[i].age==2){
+                                if(data2[i].gender==0){
+                                    dist[2].male++;
+                                }else{
+                                    dist[2].female++;
+                                }
+                            }if(data2[i].age==3){
+                                if(data2[i].gender==0){
+                                    dist[3].male++;
+                                }else{
+                                    dist[3].female++;
+                                }
+                            }if(data2[i].age==4){
+                                if(data2[i].gender==0){
+                                    dist[4].male++;
+                                }else{
+                                    dist[4].female++;
+                                }
+                            }if(data2[i].age==5){
+                                if(data2[i].gender==0){
+                                    dist[5].male++;
+                                }else{
+                                    dist[5].female++;
+                                }
+                            }
+                        }
+                        console.log(dist);
+                        x1.domain(dist.map(function(d,i){
+                            // console.log(d.label);
+                            return d.label;
+                        }));      
+                        var distgraph = d3.select("#distview")
+                                        .attr("width", width + margin.left + margin.right)
+                                        .attr("height", height + margin.top + margin.bottom)
+                                        .append("g")
+                                        .attr("transform",
+                                              "translate(" + margin.left + "," + margin.top + ")");
+                        var g2 = distgraph.append("g")
+                                            .attr("transform","translate(0,"+height+")")
+                                            .call(d3.axisBottom(x1));
+                        distgraph.selectAll(".bar")
+                                .data(dist)
+                                .enter()
+                                .append("rect")
+                                .attr("class","male")
+                                .attr("x",function(d){
+                                    return x1(d.label);
+                                })
+                                .attr("width",x1.bandwidth()/2)
+                                .attr("y",function(d){
+                                    return y(d.male);
+                                })
+                                .attr("height",function(d,i,j){
+                                    return height-y(d.male);
+                                });
+                        distgraph.selectAll(".bar")
+                                .data(dist)
+                                .enter()
+                                .append("text")
+                                .attr("x",function(d){
+                                    return x1(d.label);
+                                })
+                                .attr("y",function(d){
+                                    return y(d.male)-2;
+                                })
+                                .text(function(d){
+                                    return d.male;
+                                });
+                        distgraph.selectAll(".bar")
+                                .data(dist)
+                                .enter()
+                                .append("rect")
+                                .attr("class","female")
+                                .attr("x",function(d){
+                                    return x1(d.label)+x1.bandwidth()/2;
+                                })
+                                .attr("width",x1.bandwidth()/2)
+                                .attr("y",function(d){
+                                    return y(d.female);
+                                })
+                                .attr("height",function(d,i,j){
+                                    return height-y(d.female);
+                                });
+                        distgraph.selectAll(".bar")
+                                .data(dist)
+                                .enter()
+                                .append("text")
+                                .attr("x",function(d){
+                                    return x1(d.label)+x1.bandwidth()/2;
+                                })
+                                .attr("y",function(d){
+                                    return y(d.female)-2;
+                                })
+                                .text(function(d){
+                                    return d.female;
+                                });
+                        //label for y
+                        distgraph.append("text")
+                            .attr("transform","rotate(-90)")
+                            .attr("y", 0 - margin.left)
+                            .attr("y2",height)
+                            .attr("x", 0 - (height/2))
+                            .attr("x2",width)
+                            .attr("dy","1em")
+                            .style("text-anchor","middle")
+                            .text("the Amount of the Deaths");
+                        distgraph.append("text")
+                                .attr("transform","translate("+(width/2)+" ,"+(height+margin.top+20)+")")
+                                .style("text-anchor","middle")
+                                .text("the Range of Age");
+                        
+                        // console.log(x);
+                        // d3.csv("/data/dist.csv",function(d){
+                        //     distgraph.append("g").selectAll("g")    .data(d)
+                        //             .enter()
+                        //             .append("g")
+                        //             // .style("fill",function())
+                        //             .selectAll("rect")
+                        //             .
+                        // });
+                        // distgraph.selectAll(".bar")
+                        //         .data(dist_arr_t[0])
+                        //         .enter()
+                        //         .append("rect")
+                        //         .attr("x",function(){
+                        //             return 1;
+                        //         })
+                        //         .attr("y",function(d){
+                        //             return d.male;
+                        //         });
 
+                        distgraph.append("g")
+                                .call(d3.axisLeft(y));
+                        
 
 
                         svg.append("path")
@@ -520,7 +704,7 @@
                             .on("mouseover",function(){ focus.style("display",null); })
                             .on("mouseout",function(){ focus.style("display","none"); })
                             .on("mousemove",mousemove);
-                        var bisectDate = d3.bisector(function(d){
+                        var bisectDate = d3.bisector(function(d)            {
                                             return d.date;
                                         }).left;
 
@@ -536,7 +720,6 @@
                                 })
                                 .attr("width",8)
                                 .attr("y",function(d){
-                                    // console.log(y(d.deaths));
                                     return y(d.deaths);
                                 })
                                 .attr("height",function(d){
@@ -563,7 +746,6 @@
                                     alreadyDead.push(data2[i]);
                                 }
                             }
-                            // console.log(alreadyDead);
                             map.selectAll("circle").remove();
                             map.selectAll("circle")
                                 .append("circle")
@@ -610,7 +792,6 @@
                             var count = 0;
                             focus.attr("transform","translate("+x(d.date)+","+y(d.deaths)+")");
                             focus.select("text").text(function(){
-                                // console.log(d.deaths);
                                 var total = 0;
                                 for(var i=0;i<data1.length;i++){
                                     if (data1[i].date<=d.date) {
