@@ -12,25 +12,38 @@
 <body>
 	<div class="jumbotron text-center">
 	  <h1>Design Description</h1>
-	  <p>Resize this responsive page to see the effect!</p> 
+	  <p>H517 Project 1 by Shawn Dai</p> 
 	</div>
 	<div class="container">
+	  
 	  <div class="row">
-	    <div class="col-sm-4">
-	      <h3>Column 1</h3>
-	      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-	      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
-	    </div>
-	    <div class="col-sm-4">
-	      <h3>Column 2</h3>
-	      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-	      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
-	    </div>
-	    <div class="col-sm-4">
-	      <h3>Column 3</h3>        
-	      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-	      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
-	    </div>
+	  	<div class="col-12">
+	  		<h2>Introduction</h2>
+		  	<p>The visualization display the cholera outbreak occured at Broad Street, London, 1854, which is also called the <a href="https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak" target="_blank">Broad Street cholera outbreak</a>.</p>
+		  	
+		  	<p>The data for the visualization is based on the physican <a href="https://en.wikipedia.org/wiki/John_Snow" target="_blank">John Snow</a>'s study.</p>
+		</div>	
+	  </div>
+	  <div class="row">
+	  	<div class="col-12">
+	  		<h2>Design Process</h2>
+	  		<p>In the map, it displays people who died from August to September in 1854 near the Broad Street by showing their age range and gender. Through interaction with the map and timeline graph, viewers can read about how many death in each day from the time period, where they died, and their demographic information like gender and age. The main streets, pumps, and buildings around the Broad Street also show up in the map. In addition, the distribution of the death on gender and age has also been displayed by a bar chart.</p>
+	  		<p>In the timeline graph, moving mouse on the line will show the death on the map before the date where the mouse located. In addition, there is a tag beside the mouse to show how many death in each specific day and the total death before the day.</p>
+	  		<p>Below the timeline graph is the label explanation for the map and distribution bar chart.</p>
+	  		<p>There are two modes to view the death demographic information, including gender and age. There is a button under the label explanation for the map. By clicking the button, the map will dislay age or gender information according to the label on the button. For example, when the button showing gender view, there are only two colors representing death in the map. Viewers can change the view mode on gender or age according to their needs.</p>
+	  		<p>For age, the data is ordinal and categorical. Thus, I chose to map the color according to the the age from the young to the old. As we could view in the map, the darker points represent the death much younger, the lighter points represent the death much elder.</p>
+	  		<p>For gender, the data is categorical. Thus, I chose to map the color easily to distinguish from each other, for example, blue and orange.</p>
+	  		<p>At the bottom of the page, it is the distribution of the death according to the gender and age. Viewers can read the number of death in each age segments and how many male and female died in each age segments.</p>
+	  	</div>
+	  </div>
+	  <div class="row">
+	  	<div class="col-12">
+	  		<h2>Reference</h2>
+	  		<p><a href="https://bl.ocks.org/iamkevinv/0a24e9126cd2fa6b283c6f2d774b69a2" target="_blank">Zoom In and Zoom Out</a></p>
+	  		<p><a href="https://bl.ocks.org/alandunning/cfb7dcd7951826b9eacd54f0647f48d3" target="_blank">Line Chart with Circle Tooltip D3 V4</a></p>
+	  		<p><a href="https://www.dashingd3js.com/svg-paths-and-d3js" target="_blank">Draw Maps: SVG Paths and D3.js</a></p>
+	  		<p><a href="https://github.com/lindbrook/cholera" target="_blank">Street and Building Labels Source for Snow's Map</a></p>
+	  	</div>
 	  </div>
 	</div>
 
